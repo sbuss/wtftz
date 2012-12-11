@@ -82,8 +82,30 @@ class TestCommonTZNames(TestCase):
         self._test_slang_tz(
             datetime.utcnow(), "est", pytz.timezone("US/Eastern"))
         self._test_slang_tz(
+            datetime.utcnow(), "edt", pytz.timezone("US/Eastern"))
+        self._test_slang_tz(
             datetime.utcnow(), "eastern", pytz.timezone("US/Eastern"))
 
+    def test_cst(self):
+        self._test_slang_tz(
+            datetime.utcnow(), "cst", pytz.timezone("US/Central"))
+        self._test_slang_tz(
+            datetime.utcnow(), "cdt", pytz.timezone("US/Central"))
+        self._test_slang_tz(
+            datetime.utcnow(), "central", pytz.timezone("US/Central"))
+
+    def test_mst(self):
+        self._test_slang_tz(
+            datetime.utcnow(), "mst", pytz.timezone("US/Mountain"))
+        self._test_slang_tz(
+            datetime.utcnow(), "mdt", pytz.timezone("US/Mountain"))
+        self._test_slang_tz(
+            datetime.utcnow(), "mountain", pytz.timezone("US/Mountain"))
+
     def test_pst(self):
+        self._test_slang_tz(
+            datetime.utcnow(), "pst", pytz.timezone("US/Pacific"))
+        self._test_slang_tz(
+            datetime.utcnow(), "pdt", pytz.timezone("US/Pacific"))
         self._test_slang_tz(
             datetime.utcnow(), "pacific", pytz.timezone("US/Pacific"))
