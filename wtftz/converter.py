@@ -6,7 +6,7 @@ import pytz
 from .timezones import common_timezones
 
 
-def convert(timestamp, from_tz="utc", to_tz="utc", naive=True):
+def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
     from_timezone = common_tz_name_to_real_tz(from_tz)
     to_timezone = common_tz_name_to_real_tz(to_tz)
     timestamp = parse_timestamp(timestamp)
