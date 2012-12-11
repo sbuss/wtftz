@@ -142,6 +142,19 @@ class TestConvert(TestCase):
         self.assertEqual(converted.tzinfo, pytz.timezone("US/Pacific"))
 
 
+class TestTimestampStrings(TestCase):
+    def test_isoformat_utc(self):
+        ts = datetime.utcnow()
+        self.assertEqual(wtftz.convert(ts.isoformat(), 'utc'), ts)
+
+    def test_isoformat_tz(self):
+        ts = datetime.now(pytz.timezone("US/Pacific"))
+        self.assertEqual(wtftz.convert(ts.isoformat(), 'pst', naive=False), ts)
+        # Lie about the source timezone
+        self.assertEqual(wtftz.convert(
+            ts.isoformat(), from_tz='utc', to_tz='pst', naive=False), ts)
+
+
 class TestTimesWithoutDates(TestCase):
     def test_simple_bare_times(self):
         ts = wtftz.convert("10am", 'utc')
