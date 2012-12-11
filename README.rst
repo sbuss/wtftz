@@ -19,12 +19,16 @@ wtftz assumes you're trying to convert a UTC timestamp
 wtftz knows a few common abbreviations for timezones
 ----------------------------------------------------
 
+.. code:: python
+
     print(wtftz.convert("1355236920", "est"))
     # 2012-12-11 01:42:00
     # Sorry, Australia! EST is most commonly used for US/Eastern!
 
 wtftz gives back tzinfo-free timestamps because python's timezones are broken!
 ------------------------------------------------------------------------------
+
+.. code:: python
 
     print(wtftz.convert(datetime.datetime.now(), from_tz="pst", to_tz="utc"))
     # 2012-12-11 06:45:04.075608
@@ -36,6 +40,8 @@ wtftz knows that you don't know if the current time is PST or PDT
 
 But it does the right thing, using PST or PDT when appropriate
 
+.. code:: python
+
     print(wtftz.convert(datetime.datetime.now(), "pst"))
     # 2012-12-11 06:48:39.860947
     print(wtftz.convert(datetime.datetime.now(), "pdt"))
@@ -43,6 +49,8 @@ But it does the right thing, using PST or PDT when appropriate
 
 wtftz knows that you work with systems with nonstandard timestamp formats
 -------------------------------------------------------------------------
+
+.. code:: python
 
     print(wtftz.convert('2012/10/7 12:25:46', 'pst'))
     # 2012-10-07 19:25:46 
@@ -52,6 +60,8 @@ wtftz knows that you work with systems with nonstandard timestamp formats
 wtftz will accept proper timezone names, too
 --------------------------------------------
 
+.. code:: python
+
     print(wtftz.convert(datetime.datetime.now(), "US/Pacific"))
     # 2012-12-10 15:04:03.644934
     print(wtftz.convert(datetime.datetime.now(), "America/Chicago"))
@@ -60,12 +70,16 @@ wtftz will accept proper timezone names, too
 But it can't handle everything
 ------------------------------
 
+.. code:: python
+
     print(wtftz.convert('2012:10:7:12:25:46', 'pst'))
     # ...
     # ValueError: Cannot parse timestamp 2012:10:7:12:25:46
 
 Use it from the shell!
 ----------------------
+
+.. code:: shell
 
     $ date && ./wtftz "`date`" pst && ./wtftz "`date`" utc
     Mon Dec 10 23:43:06 PST 2012
