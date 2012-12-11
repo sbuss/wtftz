@@ -5,7 +5,7 @@ except ImportError:
 
 
 def load_readme():
-    readme_file = "README.rst"
+    readme_file = "README"
     try:
         return open(readme_file, 'r').read()
     except Exception:
