@@ -109,3 +109,13 @@ class TestCommonTZNames(TestCase):
             datetime.utcnow(), "pdt", pytz.timezone("US/Pacific"))
         self._test_slang_tz(
             datetime.utcnow(), "pacific", pytz.timezone("US/Pacific"))
+
+    def test_real_tz_name(self):
+        self._test_slang_tz(
+            datetime.utcnow(), "US/Pacific", pytz.timezone("US/Pacific"))
+        self._test_slang_tz(
+            datetime.utcnow(),
+            "America/Los_Angeles",
+            pytz.timezone("America/Los_Angeles"))
+        self._test_slang_tz(
+            datetime.utcnow(), "Africa/Cairo", pytz.timezone("Africa/Cairo"))

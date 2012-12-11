@@ -20,8 +20,11 @@ def common_tz_name_to_real_tz(name):
         return name
     if name in common_timezones:
         return common_timezones[name]
-    else:
-        return pytz.UTC
+    try:
+        return pytz.timezone(name)
+    except Exception:
+        pass
+    return pytz.UTC
 
 
 def parse_timestamp(timestamp):
