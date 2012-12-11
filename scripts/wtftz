@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+import argparse
+
+import wtftz
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='WTF Timezones?! Convert a '
+    	'time from utc (default) to another tz.')
+    parser.add_argument('time', help="The time to convert")
+    parser.add_argument('to', help="The target timezone")
+    parser.add_argument('--from', dest="from_tz",
+        default="utc", help="The source timezone.")
+    args = parser.parse_args()
+
+    try:
+        print(wtftz.convert(args.time, args.to, args.from_tz))
+    except Exception:
+        print(args.time)
