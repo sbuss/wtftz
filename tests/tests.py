@@ -140,3 +140,33 @@ class TestConvert(TestCase):
         converted = wtftz.convert(ts, 'pst', naive=False)
         self.assertFalse(converted.tzinfo is None)
         self.assertEqual(converted.tzinfo, pytz.timezone("US/Pacific"))
+
+
+class TestTimesWithoutDates(TestCase):
+    def test_simple_bare_times(self):
+        ts = wtftz.convert("10am", 'utc')
+        self.assertEqual(ts.hour, 10)
+        self.assertEqual(ts.minute, 0)
+        ts = wtftz.convert("10pm", 'utc')
+        self.assertEqual(ts.hour, 22)
+        self.assertEqual(ts.minute, 0)
+        day = ts.day
+
+        ts = wtftz.convert("10pm", 'pst')
+        self.assertEqual(ts.hour, 14)
+        self.assertEqual(ts.day, day)
+        self.assertEqual(ts.minute, 0)
+        ts = wtftz.convert("10am", 'pst')
+        self.assertEqual(ts.hour, 2)
+        self.assertEqual(ts.day, day)
+        self.assertEqual(ts.minute, 0)
+
+    def test_times_with_minutes(self):
+        today = datetime.utcnow()
+        ts = wtftz.convert("10:15pm", 'pst')
+        self.assertEqual(ts.hour, 14)
+        self.assertEqual(ts.day, today.day)
+        self.assertEqual(ts.minute, 15)
+        self.assertEqual(
+            wtftz.convert(_epoch(ts), from_tz="pst", to_tz="utc"),
+            wtftz.convert(ts, from_tz="pdt", to_tz="utc"))
