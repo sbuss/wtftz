@@ -13,7 +13,7 @@ wtftz assumes you're trying to convert a UTC timestamp
 
 ::
 
-    ..code-block:: python
+    .. code-block:: python
         print(wtftz.convert("2012-12-10T18:31:29.214653", "pst"))
         # 2012-12-10 10:31:29.214653
 
