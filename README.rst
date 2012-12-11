@@ -88,3 +88,50 @@ Use it from the shell!
     $ date +%s && ./wtftz "`date +%s`" utc
     1355211747
     2012-12-10 23:42:27
+
+Installation
+============
+
+[wtftz](http://pypi.python.org/pypi/wtftz) is in the cheeseshop, so just:
+
+.. code:: sh
+
+    pip install wtftz
+
+Development
+===========
+
+Issues and Pull Requests are welcome!
+
+I'm looking to expand the list of common timezone names to include foreign
+(to me) timezones.
+
+I am also working on a free-text parser, eg
+
+.. code:: python
+
+    print(wtftz.convert("2012-12-01 12:15:00 from utc to pst"))
+    # 2012-12-01 04:15:00
+
+Testing
+-------
+
+Tests are important. Pull requests will not be accepted without them.
+
+.. code:: sh
+
+    python -m unittest discover
+
+Readme
+------
+
+This README should be updated with examples as new behavior is added. To
+ensure that the file is formatted correctly, please check it:
+
+.. code:: sh
+
+    pip install docutils
+    pip install pygments
+    python setup.py --long-description | rst2html.py > output.html
+
+Ensure that the file parses and looks good.
