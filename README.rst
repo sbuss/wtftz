@@ -92,7 +92,7 @@ Use it from the shell!
 Installation
 ============
 
-[wtftz](http://pypi.python.org/pypi/wtftz) is in the cheeseshop, so just:
+`wtftz <http://pypi.python.org/pypi/wtftz>`_ is in the cheese shop, so just:
 
 .. code:: sh
 
