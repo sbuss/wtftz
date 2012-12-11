@@ -134,3 +134,9 @@ class TestConvert(TestCase):
         self.assertEqual(ts_pst, wtftz.convert(s, 'pst'))
         ts_utc = datetime(2012, 12, 11, 7, 31, 50)
         self.assertEqual(ts_utc, wtftz.convert(s, 'utc'))
+
+    def test_naive(self):
+        ts = datetime.utcnow()
+        converted = wtftz.convert(ts, 'pst', naive=False)
+        self.assertFalse(converted.tzinfo is None)
+        self.assertEqual(converted.tzinfo, pytz.timezone("US/Pacific"))

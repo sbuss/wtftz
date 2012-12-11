@@ -13,7 +13,10 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
     if not hasattr(timestamp, 'tzinfo') or timestamp.tzinfo is None:
         timestamp = from_timezone.localize(timestamp)
     timestamp = timestamp.astimezone(to_timezone)
-    return timestamp.replace(tzinfo=None)
+    if naive:
+        return timestamp.replace(tzinfo=None)
+    else:
+        return timestamp
 
 
 def common_tz_name_to_real_tz(name):
