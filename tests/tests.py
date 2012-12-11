@@ -119,3 +119,18 @@ class TestCommonTZNames(TestCase):
             pytz.timezone("America/Los_Angeles"))
         self._test_slang_tz(
             datetime.utcnow(), "Africa/Cairo", pytz.timezone("Africa/Cairo"))
+
+
+class TestConvert(TestCase):
+    def test_from_local_time(self):
+        ts = datetime.now(pytz.timezone("US/Pacific"))
+        self.assertEqual(
+            wtftz.convert(ts, 'utc'),
+            pytz.utc.normalize(ts).replace(tzinfo=None))
+
+    def test_sys_date(self):
+        s = "Mon Dec 10 23:31:50 PST 2012"
+        ts_pst = datetime(2012, 12, 10, 23, 31, 50)
+        self.assertEqual(ts_pst, wtftz.convert(s, 'pst'))
+        ts_utc = datetime(2012, 12, 11, 7, 31, 50)
+        self.assertEqual(ts_utc, wtftz.convert(s, 'utc'))
