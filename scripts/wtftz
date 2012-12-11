@@ -8,7 +8,7 @@ if __name__ == "__main__":
     	'time from utc (default) to another tz.')
     parser.add_argument('time', help="The time to convert")
     parser.add_argument('to', help="The target timezone")
-    parser.add_argument('--from', dest="from_tz",
+    parser.add_argument('from_tz', metavar="from", nargs="?",
         default="utc", help="The source timezone.")
     args = parser.parse_args()
 
