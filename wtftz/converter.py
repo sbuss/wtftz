@@ -10,8 +10,9 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
     from_timezone = common_tz_name_to_real_tz(from_tz)
     to_timezone = common_tz_name_to_real_tz(to_tz)
     timestamp = parse_timestamp(timestamp)
-    timestamp = from_timezone.localize(timestamp)
-    timestamp = to_timezone.normalize(timestamp)
+    if not hasattr(timestamp, 'tzinfo') or timestamp.tzinfo is None:
+        timestamp = from_timezone.localize(timestamp)
+    timestamp = timestamp.astimezone(to_timezone)
     return timestamp.replace(tzinfo=None)
 
 
