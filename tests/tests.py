@@ -5,6 +5,7 @@ from unittest import TestCase
 import pytz
 
 import wtftz
+from wtftz.parser import free_text
 
 
 def _epoch(ts):
@@ -155,6 +156,95 @@ class TestTimestampStrings(TestCase):
             ts.isoformat(), from_tz='utc', to_tz='pst', naive=False), ts)
 
 
+class TestFromTo(TestCase):
+    def setUp(self):
+        self.utc_ts = datetime.utcnow()
+        self.utc_ts_str = self.utc_ts.isoformat()
+
+        self.est_ts = _convert(self.utc_ts, to_tz=pytz.timezone("US/Eastern"))
+        self.est_ts_str = self.est_ts.isoformat()
+
+    def test_from_and_to(self):
+        query = "{ts} from utc to est".format(ts=self.utc_ts.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        query = "{ts} from est to utc".format(ts=self.est_ts_str)
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.utc_ts)
+
+    def test_to(self):
+        query = "{ts} to est".format(ts=self.utc_ts.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        est_stamped = self.est_ts.replace(tzinfo=pytz.timezone("US/Eastern"))
+        query = "{ts} to est".format(ts=est_stamped.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        query = "{ts} to utc".format(ts=est_stamped.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.utc_ts)
+
+    def test_isoformat_tz_doesnt_match(self):
+        est_stamped = self.est_ts.replace(tzinfo=pytz.timezone("US/Eastern"))
+        query = "{ts} from utc to est".format(ts=est_stamped.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        s = "Mon Dec 10 23:31:50 PST 2012"
+        target = datetime(2012, 12, 10, 23, 31, 50)
+        query = "{ts} from utc to pst".format(ts=s)
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, target)
+
+    def _test_extraction(self, query, ts, fromz, toz):
+        _ts, _fromz, _toz = free_text(query)
+        self.assertEqual(ts, _ts)
+        self.assertEqual(fromz, _fromz)
+        self.assertEqual(toz, _toz)
+
+    def test_simple_extraction(self):
+        query_template = "{ts} from {fromz} to {toz}"
+        query = query_template.format(ts=self.utc_ts_str,
+                                      fromz="utc",
+                                      toz="est")
+        self._test_extraction(query, self.utc_ts_str, "utc", "est")
+        query = query_template.format(ts=self.est_ts_str,
+                                      fromz="gmt",
+                                      toz="pdt")
+        self._test_extraction(query, self.est_ts_str, "gmt", "pdt")
+        query = query_template.format(ts=self.est_ts_str,
+                                      fromz="est",
+                                      toz="US/NewYork")
+        self._test_extraction(query, self.est_ts_str, "est", "US/NewYork")
+
+    def test_complex_extraction(self):
+        query_template = "{ts} from {fromz} to {toz}"
+        query = query_template.format(ts=self.utc_ts_str,
+                                      fromz="the one true timezone",
+                                      toz="US/Eastern")
+        self._test_extraction(
+            query, self.utc_ts_str, "the one true timezone", "US/Eastern")
+        query = query_template.format(ts="4am",
+                                      fromz="los angeles",
+                                      toz="US/Central")
+        self._test_extraction(
+            query, "4am", "los angeles", "US/Central")
+
+    def test_extraction_no_from(self):
+        query_template = "{ts} to {toz}"
+        query = query_template.format(ts=self.utc_ts_str,
+                                      toz="US/Eastern")
+        self._test_extraction(
+            query, self.utc_ts_str, None, "US/Eastern")
+        query = query_template.format(ts=self.est_ts_str,
+                                      toz="US/Pacific")
+        self._test_extraction(
+            query, self.est_ts_str, None, "US/Pacific")
+
+
 class TestTimesWithoutDates(TestCase):
     def test_simple_bare_times(self):
         ts = wtftz.convert("10am", 'utc')
@@ -175,11 +265,11 @@ class TestTimesWithoutDates(TestCase):
         self.assertEqual(ts.minute, 0)
 
     def test_times_with_minutes(self):
-        today = datetime.utcnow()
+        today = datetime.now(tz=pytz.timezone("US/Pacific"))
         ts = wtftz.convert("10:15pm", 'pst')
         self.assertEqual(ts.hour, 14)
-        self.assertEqual(ts.day, today.day)
         self.assertEqual(ts.minute, 15)
+        self.assertEqual(ts.day, today.day)
         self.assertEqual(
             wtftz.convert(_epoch(ts), from_tz="pst", to_tz="utc"),
             wtftz.convert(ts, from_tz="pdt", to_tz="utc"))

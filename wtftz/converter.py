@@ -4,6 +4,7 @@ from dateutil import parser as date_parser
 import pytz
 
 from .timezones import common_timezones
+from .parser import free_text
 
 
 def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
@@ -16,7 +17,22 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
         naive: If True, then strip the tzinfo from the converted timestamp,
                if False then leave it.
     Returns a timestamp in the requested timezone.
+
+    An important caveat is that if you include a timezone offset in the
+    "timestamp" string, the `from_tz` parameter will be ignored. For example
+    if you do the following:
+
+    >>> convert(
+    ... '2012-12-23T14:23:03.826437-05:00', to_tz='utc', from_tz='pst')
+    datetime.datetime(2012, 12, 23, 19, 23, 3, 826437)
+
+    Then wtftz will use US/Eastern standard time and ignore the 'pst' value
+    for `from_tz`.
     """
+    if not to_tz:
+        to_tz = "utc"
+    if not from_tz:
+        from_tz = "utc"
     from_timezone = common_tz_name_to_real_tz(from_tz)
     to_timezone = common_tz_name_to_real_tz(to_tz)
     timestamp = parse_timestamp(timestamp)
@@ -27,6 +43,21 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
         return timestamp.replace(tzinfo=None)
     else:
         return timestamp
+
+
+def convert_free(query):
+    """Parse a string and convert the found timestamp with the found tz.
+
+    Args:
+        query - A string with a time, and a source and destination timezone.
+    Returns a timestamp in the requested timezone.
+
+    EG:
+    >>> convert_free("2012-12-23T14:23:03.826437-05:00 to pst")
+    datetime.datetime(2012, 12, 23, 11, 23, 3, 826437)
+    """
+    ts, fromz, toz = free_text(query)
+    return convert(ts, toz, fromz)
 
 
 def common_tz_name_to_real_tz(name):
