@@ -100,6 +100,20 @@ Use it from the shell!
     1355211747
     2012-12-10 23:42:27
 
+Wtftz can also handle free text strings
+---------------------------------------
+
+.. code:: python
+
+    print(wtftz.convert_free("1355236920 to est"))
+    # 2012-12-11 01:42:00
+    print(wtftz.convert_free("2012-12-10T18:31:29.214653-08:00 to est"))
+    # 2012-12-10 21:31:29.214653
+    print(wtftz.convert_free("2012-12-10T18:31:29.214653 from pst to est"))
+    # 2012-12-10 21:31:29.214653
+    print(wtftz.convert_free("2012-12-10T18:31:29.214653 from utc to est"))
+    # 2012-12-10 13:31:29.214653
+
 Installation
 ============
 
@@ -115,14 +129,8 @@ Development
 Issues and Pull Requests are welcome!
 
 I'm looking to expand the list of common timezone names to include foreign
-(to me) timezones.
+(to me) timezones and make the free-text parser smarter.
 
-I am also working on a free-text parser, eg
-
-.. code:: python
-
-    print(wtftz.convert("2012-12-01 12:15:00 from utc to pst"))
-    # 2012-12-01 04:15:00
 
 Testing
 -------
