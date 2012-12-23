@@ -34,12 +34,29 @@ class TestUtc(TestCase):
     def test_utc_epoch(self):
         ts = datetime.utcnow()
         epoch = _epoch(ts)
+        ts = datetime.fromtimestamp(float(epoch))
         self._test_times(epoch, _truncate_time(ts))
 
     def test_utc_epoch_milliseconds(self):
         ts = datetime.utcnow()
         epoch = _epoch(ts)
         epoch += ".{us}".format(us=ts.microsecond)
+        # datetime.fromtimestamp, which wtftz uses, always adds 0s to epochs,
+        # so re-parse the timestamp so the results will always match.
+        ts = datetime.fromtimestamp(float(epoch))
+        self._test_times(epoch, ts)
+
+    def test_trailing_zero(self):
+        ts = datetime(2012, 12, 23, 14, 48, 0)
+        epoch = _epoch(ts)
+        epoch += ".{us}".format(us=ts.microsecond)
+        ts = datetime.fromtimestamp(float(epoch))
+        self._test_times(epoch, ts)
+
+        ts = datetime(2012, 12, 23, 14, 48, 0, 9292)
+        epoch = _epoch(ts)
+        epoch += ".{us}".format(us=ts.microsecond)
+        ts = datetime.fromtimestamp(float(epoch))
         self._test_times(epoch, ts)
 
     def test_utc_isoformat(self):
