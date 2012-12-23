@@ -147,7 +147,7 @@ class TestConvert(TestCase):
             pytz.utc.normalize(ts).replace(tzinfo=None))
 
     def test_sys_date(self):
-        s = "Mon Dec 10 23:31:50 PST 2012"
+        s = "Mon Dec 10 23:31:50 EST 2012"
         ts_pst = datetime(2012, 12, 10, 23, 31, 50)
         self.assertEqual(ts_pst, wtftz.convert(s, 'pst'))
         ts_utc = datetime(2012, 12, 11, 7, 31, 50)
@@ -210,7 +210,7 @@ class TestFromTo(TestCase):
         result = wtftz.convert_free(query)
         self.assertEqual(result, self.est_ts)
 
-        s = "Mon Dec 10 23:31:50 PST 2012"
+        s = "Mon Dec 10 23:31:50 EST 2012"
         target = datetime(2012, 12, 10, 23, 31, 50)
         query = "{ts} from utc to pst".format(ts=s)
         result = wtftz.convert_free(query)
