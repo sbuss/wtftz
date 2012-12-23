@@ -5,6 +5,7 @@ from unittest import TestCase
 import pytz
 
 import wtftz
+from wtftz.parser import free_text
 
 
 def _epoch(ts):
@@ -153,6 +154,57 @@ class TestTimestampStrings(TestCase):
         # Lie about the source timezone
         self.assertEqual(wtftz.convert(
             ts.isoformat(), from_tz='utc', to_tz='pst', naive=False), ts)
+
+
+class TestFromTo(TestCase):
+    def setUp(self):
+        self.utc_ts = datetime.utcnow()
+        self.utc_ts_str = self.utc_ts.isoformat()
+
+        self.est_ts = _convert(self.utc_ts, to_tz=pytz.timezone("US/Eastern"))
+        self.est_ts_str = self.est_ts.isoformat()
+
+    def test_from_and_to(self):
+        query = "{ts} from utc to est".format(ts=self.utc_ts.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+        query = "{ts} from est to utc".format(ts=self.est_ts_str)
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.utc_ts)
+
+    def _test_extraction(self, query, ts, fromz, toz):
+        _ts, _fromz, _toz = free_text(query)
+        self.assertEqual(ts, _ts)
+        self.assertEqual(fromz, _fromz)
+        self.assertEqual(toz, _toz)
+
+    def test_simple_extraction(self):
+        query_template = "{ts} from {fromz} to {toz}"
+        query = query_template.format(ts=self.utc_ts_str,
+                                      fromz="utc",
+                                      toz="est")
+        self._test_extraction(query, self.utc_ts_str, "utc", "est")
+        query = query_template.format(ts=self.est_ts_str,
+                                      fromz="gmt",
+                                      toz="pdt")
+        self._test_extraction(query, self.est_ts_str, "gmt", "pdt")
+        query = query_template.format(ts=self.est_ts_str,
+                                      fromz="est",
+                                      toz="US/NewYork")
+        self._test_extraction(query, self.est_ts_str, "est", "US/NewYork")
+
+    def test_complex_extraction(self):
+        query_template = "{ts} from {fromz} to {toz}"
+        query = query_template.format(ts=self.utc_ts_str,
+                                      fromz="the one true timezone",
+                                      toz="US/Eastern")
+        self._test_extraction(
+            query, self.utc_ts_str, "the one true timezone", "US/Eastern")
+        query = query_template.format(ts="4am",
+                                      fromz="los angeles",
+                                      toz="US/Central")
+        self._test_extraction(
+            query, "4am", "los angeles", "US/Central")
 
 
 class TestTimesWithoutDates(TestCase):

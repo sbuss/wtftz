@@ -4,6 +4,7 @@ from dateutil import parser as date_parser
 import pytz
 
 from .timezones import common_timezones
+from .parser import free_text
 
 
 def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
@@ -27,6 +28,11 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
         return timestamp.replace(tzinfo=None)
     else:
         return timestamp
+
+
+def convert_free(query):
+    ts, fromz, toz = free_text(query)
+    return convert(ts, toz, fromz)
 
 
 def common_tz_name_to_real_tz(name):
