@@ -168,9 +168,36 @@ class TestFromTo(TestCase):
         query = "{ts} from utc to est".format(ts=self.utc_ts.isoformat())
         result = wtftz.convert_free(query)
         self.assertEqual(result, self.est_ts)
+
         query = "{ts} from est to utc".format(ts=self.est_ts_str)
         result = wtftz.convert_free(query)
         self.assertEqual(result, self.utc_ts)
+
+    def test_to(self):
+        query = "{ts} to est".format(ts=self.utc_ts.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        est_stamped = self.est_ts.replace(tzinfo=pytz.timezone("US/Eastern"))
+        query = "{ts} to est".format(ts=est_stamped.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        query = "{ts} to utc".format(ts=est_stamped.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.utc_ts)
+
+    def test_isoformat_tz_doesnt_match(self):
+        est_stamped = self.est_ts.replace(tzinfo=pytz.timezone("US/Eastern"))
+        query = "{ts} from utc to est".format(ts=est_stamped.isoformat())
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, self.est_ts)
+
+        s = "Mon Dec 10 23:31:50 PST 2012"
+        target = datetime(2012, 12, 10, 23, 31, 50)
+        query = "{ts} from utc to pst".format(ts=s)
+        result = wtftz.convert_free(query)
+        self.assertEqual(result, target)
 
     def _test_extraction(self, query, ts, fromz, toz):
         _ts, _fromz, _toz = free_text(query)
@@ -205,6 +232,17 @@ class TestFromTo(TestCase):
                                       toz="US/Central")
         self._test_extraction(
             query, "4am", "los angeles", "US/Central")
+
+    def test_extraction_no_from(self):
+        query_template = "{ts} to {toz}"
+        query = query_template.format(ts=self.utc_ts_str,
+                                      toz="US/Eastern")
+        self._test_extraction(
+            query, self.utc_ts_str, None, "US/Eastern")
+        query = query_template.format(ts=self.est_ts_str,
+                                      toz="US/Pacific")
+        self._test_extraction(
+            query, self.est_ts_str, None, "US/Pacific")
 
 
 class TestTimesWithoutDates(TestCase):
