@@ -59,6 +59,7 @@ setup(
     scripts=[
         'bin/wtftz',
     ],
+    test_suite="tests",
     install_requires=[
         'python-dateutil>=1.5',
         'pytz',
