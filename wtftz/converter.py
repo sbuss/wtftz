@@ -18,6 +18,10 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
                if False then leave it.
     Returns a timestamp in the requested timezone.
     """
+    if not to_tz:
+        to_tz = "utc"
+    if not from_tz:
+        from_tz = "utc"
     from_timezone = common_tz_name_to_real_tz(from_tz)
     to_timezone = common_tz_name_to_real_tz(to_tz)
     timestamp = parse_timestamp(timestamp)
