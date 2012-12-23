@@ -22,8 +22,9 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
     "timestamp" string, the `from_tz` parameter will be ignored. For example
     if you do the following:
 
-    >>> wtftz.convert(
+    >>> convert(
     ... '2012-12-23T14:23:03.826437-05:00', to_tz='utc', from_tz='pst')
+    datetime.datetime(2012, 12, 23, 19, 23, 3, 826437)
 
     Then wtftz will use US/Eastern standard time and ignore the 'pst' value
     for `from_tz`.
@@ -49,10 +50,11 @@ def convert_free(query):
 
     Args:
         query - A string with a time, and a source and destination timezone.
+    Returns a timestamp in the requested timezone.
 
     EG:
-    >>> wtftz.convert_free("2012-12-23T14:23:03.826437-05:00 to pst")
-    datetime(2012, 12, 23, 11, 23, 03, 826437)
+    >>> convert_free("2012-12-23T14:23:03.826437-05:00 to pst")
+    datetime.datetime(2012, 12, 23, 11, 23, 3, 826437)
     """
     ts, fromz, toz = free_text(query)
     return convert(ts, toz, fromz)
