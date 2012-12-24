@@ -45,11 +45,13 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
         return timestamp
 
 
-def convert_free(query):
+def convert_free(query, naive=True):
     """Parse a string and convert the found timestamp with the found tz.
 
     Args:
         query - A string with a time, and a source and destination timezone.
+        naive: If True, then strip the tzinfo from the converted timestamp,
+               if False then leave it.
     Returns a timestamp in the requested timezone.
 
     EG:
@@ -57,7 +59,7 @@ def convert_free(query):
     datetime.datetime(2012, 12, 23, 11, 23, 3, 826437)
     """
     ts, fromz, toz = free_text(query)
-    return convert(ts, toz, fromz)
+    return convert(ts, toz, fromz, naive)
 
 
 def common_tz_name_to_real_tz(name):
