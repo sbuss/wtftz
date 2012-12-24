@@ -217,6 +217,12 @@ class TestFromTo(TestCase):
         result = wtftz.convert_free(query)
         self.assertEqual(result, self.est_ts)
 
+    def test_naive(self):
+        ts = datetime.utcnow()
+        converted = wtftz.convert_free("%s to pst" % ts, naive=False)
+        self.assertFalse(converted.tzinfo is None)
+        self.assertEqual(converted.tzinfo, pytz.timezone("US/Pacific"))
+
     def test_sysdate_tz_doesnt_match(self):
         # TODO: Make this test pass
         """s = "Mon Dec 10 23:31:50 EST 2012"
