@@ -69,8 +69,9 @@ def common_tz_name_to_real_tz(name):
     """
     if isinstance(name, datetime.tzinfo):
         return name
-    if name in common_timezones:
-        return common_timezones[name]
+    common_name = name.lower()
+    if common_name in common_timezones:
+        return common_timezones[common_name]
     try:
         return pytz.timezone(name)
     except Exception:
