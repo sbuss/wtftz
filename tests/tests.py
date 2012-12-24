@@ -128,6 +128,12 @@ class TestCommonTZNames(TestCase):
         self._test_slang_tz(
             datetime.utcnow(), "pacific", pytz.timezone("US/Pacific"))
 
+    def test_caps(self):
+        self._test_slang_tz(
+            datetime.utcnow(), "UTC", pytz.utc)
+        self._test_slang_tz(
+            datetime.utcnow(), "PST", pytz.timezone("US/Pacific"))
+
     def test_real_tz_name(self):
         self._test_slang_tz(
             datetime.utcnow(), "US/Pacific", pytz.timezone("US/Pacific"))
