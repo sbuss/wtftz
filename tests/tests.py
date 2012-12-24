@@ -291,11 +291,9 @@ class TestTimesWithoutDates(TestCase):
         self.assertEqual(ts.minute, 0)
 
     def test_times_with_minutes(self):
-        today = datetime.now(tz=pytz.timezone("US/Pacific"))
         ts = wtftz.convert("10:15pm", 'pst')
         self.assertEqual(ts.hour, 14)
         self.assertEqual(ts.minute, 15)
-        self.assertEqual(ts.day, today.day)
         self.assertEqual(
             wtftz.convert(_epoch(ts), from_tz="pst", to_tz="utc"),
             wtftz.convert(ts, from_tz="pdt", to_tz="utc"))
