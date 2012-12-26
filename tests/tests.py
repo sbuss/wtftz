@@ -154,11 +154,11 @@ class TestConvert(TestCase):
 
     def test_sys_date(self):
         #TODO: Make this test pass
-        """s = "Mon Dec 10 23:31:50 EST 2012"
-        ts_pst = datetime(2012, 12, 10, 23, 31, 50)
+        s = "Mon Dec 10 23:31:50 EST 2012"
+        ts_pst = datetime(2012, 12, 10, 20, 31, 50)
         self.assertEqual(ts_pst, wtftz.convert(s, 'pst'))
-        ts_utc = datetime(2012, 12, 11, 7, 31, 50)
-        self.assertEqual(ts_utc, wtftz.convert(s, 'utc'))"""
+        ts_utc = datetime(2012, 12, 11, 4, 31, 50)
+        self.assertEqual(ts_utc, wtftz.convert(s, 'utc'))
 
     def test_naive(self):
         ts = datetime.utcnow()
@@ -225,11 +225,11 @@ class TestFromTo(TestCase):
 
     def test_sysdate_tz_doesnt_match(self):
         # TODO: Make this test pass
-        """s = "Mon Dec 10 23:31:50 EST 2012"
-        target = datetime(2012, 12, 10, 23, 31, 50)
+        s = "Mon Dec 10 23:31:50 EST 2012"
+        target = datetime(2012, 12, 10, 20, 31, 50)
         query = "{ts} from utc to pst".format(ts=s)
         result = wtftz.convert_free(query)
-        self.assertEqual(result, target)"""
+        self.assertEqual(result, target)
 
     def _test_extraction(self, query, ts, fromz, toz):
         _ts, _fromz, _toz = free_text(query)
