@@ -5,6 +5,7 @@ import pytz
 
 from .timezones import common_timezones
 from .parser import free_text
+from .parser import _from
 
 
 def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
@@ -33,8 +34,8 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
         to_tz = "utc"
     if not from_tz:
         from_tz = "utc"
-    from_timezone = common_tz_name_to_real_tz(from_tz)
-    to_timezone = common_tz_name_to_real_tz(to_tz)
+    from_timezone = common_tz_name_to_real_tz(from_tz) or pytz.UTC
+    to_timezone = common_tz_name_to_real_tz(to_tz) or pytz.UTC
     timestamp = parse_timestamp(timestamp)
     if not hasattr(timestamp, 'tzinfo') or timestamp.tzinfo is None:
         timestamp = from_timezone.localize(timestamp)
@@ -67,7 +68,7 @@ def common_tz_name_to_real_tz(name):
 
     Args:
         name: The name of the timezone. eg "est" or "US/Eastern"
-    Returns a tzinfo.
+    Returns a tzinfo or None, if the given name is unknown.
     """
     if isinstance(name, datetime.tzinfo):
         return name
@@ -78,7 +79,7 @@ def common_tz_name_to_real_tz(name):
         return pytz.timezone(name)
     except Exception:
         pass
-    return pytz.UTC
+    return None
 
 
 def parse_timestamp(timestamp):
@@ -89,6 +90,7 @@ def parse_timestamp(timestamp):
                    isoformat, and anything python-dateutil can handle.
     Returns a timestamp.
     """
+    orig_timestamp = timestamp
     if isinstance(timestamp, datetime.datetime) or \
             isinstance(timestamp, datetime.time):
         return timestamp
@@ -104,9 +106,26 @@ def parse_timestamp(timestamp):
         pass
 
     timestamp = str(timestamp)
+    # We might have a weird timestamp string with a timezone
+    # eg: "Mon Dec 10 23:31:50 EST 2012"
+    fromz = None
     try:
-        return date_parser.parse(timestamp)
+        free_ts, free_from = _from(timestamp)
+        if free_from and common_tz_name_to_real_tz(free_from):
+            fromz = common_tz_name_to_real_tz(free_from)
+            timestamp = free_ts
     except Exception:
         pass
 
-    raise ValueError("Cannot parse timestamp {ts}".format(ts=timestamp))
+    try:
+        parsed_date = date_parser.parse(timestamp)
+        if fromz:
+            if hasattr(parsed_date, 'tzinfo') and parsed_date.tzinfo:
+                parsed_date.replace(tzinfo=fromz)
+            else:
+                parsed_date = fromz.localize(parsed_date)
+        return parsed_date
+    except Exception:
+        pass
+
+    raise ValueError("Cannot parse timestamp {ts}".format(ts=orig_timestamp))
