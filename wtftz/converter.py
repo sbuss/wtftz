@@ -33,8 +33,8 @@ def convert(timestamp, to_tz="utc", from_tz="utc", naive=True):
         to_tz = "utc"
     if not from_tz:
         from_tz = "utc"
-    from_timezone = common_tz_name_to_real_tz(from_tz)
-    to_timezone = common_tz_name_to_real_tz(to_tz)
+    from_timezone = common_tz_name_to_real_tz(from_tz) or pytz.UTC
+    to_timezone = common_tz_name_to_real_tz(to_tz) or pytz.UTC
     timestamp = parse_timestamp(timestamp)
     if not hasattr(timestamp, 'tzinfo') or timestamp.tzinfo is None:
         timestamp = from_timezone.localize(timestamp)
@@ -67,7 +67,7 @@ def common_tz_name_to_real_tz(name):
 
     Args:
         name: The name of the timezone. eg "est" or "US/Eastern"
-    Returns a tzinfo.
+    Returns a tzinfo or None, if the given name is unknown.
     """
     if isinstance(name, datetime.tzinfo):
         return name
@@ -78,7 +78,7 @@ def common_tz_name_to_real_tz(name):
         return pytz.timezone(name)
     except Exception:
         pass
-    return pytz.UTC
+    return None
 
 
 def parse_timestamp(timestamp):
