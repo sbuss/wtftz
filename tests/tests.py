@@ -223,6 +223,12 @@ class TestFromTo(TestCase):
         self.assertFalse(converted.tzinfo is None)
         self.assertEqual(converted.tzinfo, pytz.timezone("US/Pacific"))
 
+    def test_sysdate_free(self):
+        s = "Mon Dec 10 23:31:50 EST 2012"
+        ts_pst = datetime(2012, 12, 10, 20, 31, 50)
+        query = "%s to pst" % s
+        self.assertEqual(ts_pst, wtftz.convert_free(query))
+
     def test_sysdate_tz_doesnt_match(self):
         # TODO: Make this test pass
         s = "Mon Dec 10 23:31:50 EST 2012"
@@ -275,6 +281,14 @@ class TestFromTo(TestCase):
                                       toz="US/Pacific")
         self._test_extraction(
             query, self.est_ts_str, None, "US/Pacific")
+
+    def test_extraction_no_from_keyword(self):
+        query_template = "{ts} {fromz} to {toz}"
+        query = query_template.format(ts=self.est_ts_str,
+                                      fromz="EST",
+                                      toz="US/Pacific")
+        self._test_extraction(
+            query, self.est_ts_str, "EST", "US/Pacific")
 
 
 class TestTimesWithoutDates(TestCase):
